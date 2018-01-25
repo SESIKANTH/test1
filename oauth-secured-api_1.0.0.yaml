@@ -1,0 +1,56 @@
+---
+swagger: "2.0"
+info:
+  x-ibm-name: "oauth-secured-api"
+  title: "oauth-secured-api"
+  version: "1.0.0"
+schemes:
+- "https"
+host: "$(catalog.host)"
+basePath: "/oauth-secured-api"
+consumes:
+- "application/json"
+produces:
+- "application/json"
+securityDefinitions:
+  api-key-1:
+    type: "apiKey"
+    description: ""
+    in: "header"
+    name: "X-IBM-Client-Id"
+  oauth-1:
+    type: "oauth2"
+    description: ""
+    flow: "accessCode"
+    authorizationUrl: "https://169.46.213.81:443/krithikap-oauth-demo/sb/confidential/oauth2/authorize"
+    scopes:
+      scope1: ""
+    tokenUrl: "https://169.46.213.81:443/krithikap-oauth-demo/sb/confidential/oauth2/token"
+x-ibm-configuration:
+  testable: true
+  enforced: true
+  cors:
+    enabled: true
+  assembly:
+    execute:
+    - gatewayscript:
+        title: "gatewayscript"
+        version: "1.0.0"
+        source: "var OAuthCtxVars = {\n'access-token': apim.getvariable('oauth.access-token'),\n\
+          'resource-owner' : apim.getvariable('oauth.resource-owner'),\n'scope' :\
+          \ apim.getvariable('oauth.scope'),\n'not-before' : apim.getvariable('oauth.not-before'),\n\
+          'not-after' : apim.getvariable('oauth.not-after'),\n'miscinfo' : apim.getvariable('oauth.miscinfo')};\n\
+          \napim.setvariable('message.body', OAuthCtxVars);"
+  phase: "realized"
+paths:
+  /getOAuthCtxVars:
+    get:
+      responses:
+        200:
+          description: "200 OK"
+definitions: {}
+tags: []
+security:
+- oauth-1:
+  - "scope1"
+  api-key-1: []
